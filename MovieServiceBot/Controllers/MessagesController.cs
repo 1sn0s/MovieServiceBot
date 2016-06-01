@@ -18,22 +18,25 @@ namespace MovieServiceBot
         {
             if (message.Type == "Message")
             {
-                MovieLUIS userData = await LUIS.ProcessuserInput(message.Text);
-                MovieController thisMovie;
-                string replyMessage = string.Empty;
+                MovieLUIS userData = await LUIS.ProcessuserInput(message.Text);                
+                string replyMessage = "Sorry, I don't have an answer for that.";
 
-                var intents = userData.intents;
-                if (intents.Count() > 0)
+                var topScoringIntent = userData.intents[0];
+                if (topScoringIntent.intent == "None")
                 {
-                    switch (intents[0].intent)
+                    return message.CreateReplyMessage(replyMessage);
+                }
+
+                var actions = topScoringIntent.actions;
+                if (actions.Count() > 0)
+                {
+                    var action = actions[0];
+                    switch (action.name)
                     {
                         case "GetRating":
-                            Movie search = new Movie();
-                            search.Title = "frozen";
-                            thisMovie = new MovieController(search);
-                            replyMessage = thisMovie.GetImdbRating();
+                            replyMessage = GetRating(action.parameters);
                             break;
-                        default: replyMessage = "Sorry, I cannot answer that question";
+                        default: replyMessage = "Sorry, I cannot answer that currently.";
                             break;
                     }
                 }
@@ -43,6 +46,28 @@ namespace MovieServiceBot
             {
                 return HandleSystemMessage(message);
             }
+        }
+
+        /// <summary>
+        /// Gets the Imdb rating
+        /// </summary>
+        /// <param name="parameters">Contains the rating, title parameters</param>
+        /// <returns>reply with the rating of the title</returns>
+        private string GetRating(Parameter[] parameters)
+        {
+            MovieController thisMovie;
+            var rating = parameters[0];
+            var title = parameters[1];
+            if(!(rating != null && title != null))
+            {
+                return $"Invalid input";
+            }
+
+            Movie search = new Movie();
+            search.Title = title.value[0].entity;
+            thisMovie = new MovieController(search);
+
+            return thisMovie.GetImdbRating();
         }
 
         private Message HandleSystemMessage(Message message)
