@@ -19,7 +19,7 @@ namespace MovieServiceBot
             if (message.Type == "Message")
             {
                 MovieLUIS userData = await LUIS.ProcessuserInput(message.Text);                
-                string replyMessage = "Sorry, I don't have an answer for that.";
+                string replyMessage = "Sorry, I don't understand what you just said. I am still learning.";
 
                 var topScoringIntent = userData.intents[0];
                 if (topScoringIntent.intent == "None")
@@ -36,7 +36,10 @@ namespace MovieServiceBot
                         case "GetRating":
                             replyMessage = GetRating(action.parameters);
                             break;
-                        default: replyMessage = "Sorry, I cannot answer that currently.";
+                        case "GetGenre":
+                            replyMessage = GetGenre(action.parameters);
+                            break;
+                        default: replyMessage = "Sorry, I don't have an answer for that currently.";
                             break;
                     }
                 }
@@ -51,14 +54,13 @@ namespace MovieServiceBot
         /// <summary>
         /// Gets the Imdb rating
         /// </summary>
-        /// <param name="parameters">Contains the rating, title parameters</param>
+        /// <param name="parameters">Contains the title parameter</param>
         /// <returns>reply with the rating of the title</returns>
         private string GetRating(Parameter[] parameters)
         {
             MovieController thisMovie;
-            var rating = parameters[0];
-            var title = parameters[1];
-            if(!(rating != null && title != null))
+            var title = parameters[0];
+            if(title == null)
             {
                 return $"Invalid input";
             }
@@ -68,6 +70,27 @@ namespace MovieServiceBot
             thisMovie = new MovieController(search);
 
             return thisMovie.GetImdbRating();
+        }
+
+        /// <summary>
+        /// Gets the Genre of the movie
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns>reaply with the Genre of the movie</returns>
+        private string GetGenre(Parameter[] parameters)
+        {
+            MovieController thisMovie;
+            var title = parameters[0];
+            if (title == null)
+            {
+                return $"Invalid input";
+            }
+
+            Movie search = new Movie();
+            search.Title = title.value[0].entity;
+            thisMovie = new MovieController(search);
+
+            return thisMovie.GetMovieGenre();
         }
 
         private Message HandleSystemMessage(Message message)

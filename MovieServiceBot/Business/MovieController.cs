@@ -28,5 +28,10 @@ namespace MovieServiceBot.Controllers
         {
             return $"The imdb rating for {currentMovie.Title} is {currentMovie.imdbRating}";
         }
+
+        public string GetMovieGenre()
+        {
+            return $"{currentMovie.Genre}";
+        }
     }
 }
