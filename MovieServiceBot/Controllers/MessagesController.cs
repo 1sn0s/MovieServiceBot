@@ -21,6 +21,11 @@ namespace MovieServiceBot
                 MovieLUIS userData = await LUIS.ProcessuserInput(message.Text);                
                 string replyMessage = "Sorry, I don't understand what you just said. I am still learning.";
 
+                if(userData == null)
+                {
+                    replyMessage = "My friend Luis is sleeping. He needs to wake up.";
+                    message.CreateReplyMessage(replyMessage);
+                }
                 var topScoringIntent = userData.intents[0];
                 if (topScoringIntent.intent == "None")
                 {
@@ -39,6 +44,15 @@ namespace MovieServiceBot
                         case "GetGenre":
                             replyMessage = GetGenre(action.parameters);
                             break;
+                        case "GetActor":
+                            replyMessage = GetActor(action.parameters);
+                            break;
+                        case "GetPlot":
+                            replyMessage = GetPlot(action.parameters);
+                            break;
+                        case "GetDirector":
+                            replyMessage = GetDirector(action.parameters);
+                            break;
                         default: replyMessage = "Sorry, I don't have an answer for that currently.";
                             break;
                     }
@@ -51,6 +65,9 @@ namespace MovieServiceBot
             }
         }
 
+
+        static MovieController thisMovie;
+
         /// <summary>
         /// Gets the Imdb rating
         /// </summary>
@@ -58,18 +75,14 @@ namespace MovieServiceBot
         /// <returns>reply with the rating of the title</returns>
         private string GetRating(Parameter[] parameters)
         {
-            MovieController thisMovie;
-            var title = parameters[0];
-            if(title == null)
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
             {
-                return $"Invalid input";
+                reply = $"The imdb rating for {currentMovie.GetMovieTitle()} is {currentMovie.GetImdbRating()}";
             }
 
-            Movie search = new Movie();
-            search.Title = title.value[0].entity;
-            thisMovie = new MovieController(search);
-
-            return thisMovie.GetImdbRating();
+            return reply;
         }
 
         /// <summary>
@@ -79,18 +92,94 @@ namespace MovieServiceBot
         /// <returns>reaply with the Genre of the movie</returns>
         private string GetGenre(Parameter[] parameters)
         {
-            MovieController thisMovie;
-            var title = parameters[0];
-            if (title == null)
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
             {
-                return $"Invalid input";
+                reply = currentMovie.GetMovieGenre();
             }
 
-            Movie search = new Movie();
-            search.Title = title.value[0].entity;
-            thisMovie = new MovieController(search);
+            return reply;
+        }
 
-            return thisMovie.GetMovieGenre();
+        private string GetPlot(Parameter[] parameters)
+        {
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
+            {
+                reply = currentMovie.GetMoviePlot();
+            }
+
+            return reply;
+        }
+
+        private string GetRunningTime(Parameter[] parameters)
+        {
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
+            {
+                reply = currentMovie.GetMovieRunningTime();
+            }
+
+            return reply;
+        }
+
+        private string GetReleaseDate(Parameter[] parameters)
+        {
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
+            {
+                reply = currentMovie.GetMovieReleaseDate();
+            }
+
+            return reply;
+        }
+
+        private string GetActor(Parameter[] parameters)
+        {
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
+            {
+                reply = currentMovie.GetMovieActor();
+            }
+
+            return reply;
+        }
+
+        private string GetDirector(Parameter[] parameters)
+        {
+            string reply = "Sorry, I don't understand that.";
+            MovieController currentMovie = GetCurrentMovie(parameters);
+            if (null != currentMovie)
+            {
+                reply = currentMovie.GetMovieDirector();
+            }
+
+            return reply;
+        }
+
+        private MovieController GetCurrentMovie(Parameter[] parameters)
+        {
+            var title = parameters[0];
+            if (title == null || title.value == null)
+            {
+                if (thisMovie == null)
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                Movie search = new Movie();
+                search.Title = title.value[0].entity;
+                thisMovie = new MovieController(search);
+            }
+
+            return thisMovie;
         }
 
         private Message HandleSystemMessage(Message message)

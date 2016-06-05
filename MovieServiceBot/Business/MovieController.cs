@@ -24,14 +24,44 @@ namespace MovieServiceBot.Controllers
             currentMovie = JsonConvert.DeserializeObject<Movie>(content);
         }
 
+        public string GetMovieTitle()
+        {
+            return $"{currentMovie.Title}";
+        }
+
         public string GetImdbRating()
         {
-            return $"The imdb rating for {currentMovie.Title} is {currentMovie.imdbRating}";
+            return $"{currentMovie.imdbRating}";
         }
 
         public string GetMovieGenre()
         {
             return $"{currentMovie.Genre}";
+        }
+
+        public string GetMoviePlot()
+        {
+            return $"{currentMovie.Plot}";
+        }
+
+        public string GetMovieRunningTime()
+        {
+            return $"{currentMovie.Runtime}";
+        }
+
+        public string GetMovieReleaseDate()
+        {
+            return $"{currentMovie.Released}";
+        }
+
+        public string GetMovieActor()
+        {
+            return $"{currentMovie.Actors}";
+        }
+
+        public string GetMovieDirector()
+        {
+            return $"{currentMovie.Director}";
         }
     }
 }
