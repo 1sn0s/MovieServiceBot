@@ -1,27 +1,32 @@
-﻿using System;
-using System.Net;
-using System.IO;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
+using MovieServiceBot.Model;
+using MovieServiceBot.Services;
+using System.Collections;
 
-namespace MovieServiceBot.Controllers
+namespace MovieServiceBot.Managers
 {
-    public class MovieController
+    public class MovieManager
     {
-        Movie currentMovie;
-        const string url = "http://www.omdbapi.com/?";
+        Movie currentMovie;        
 
-        public MovieController(Movie movie)
+        public MovieManager(string title)
         {
-            String title = movie.Title;
-            string apiUrl = string.Concat(url, "t=", title);
+            string movieDataJSON = GetMovieByTitle(title);
+            currentMovie = DeserializeMovie(movieDataJSON);
+        }
 
-            WebRequest request = WebRequest.Create(apiUrl);
-            HttpWebResponse response = (HttpWebResponse)request.GetResponse();
-            Stream dataStream = response.GetResponseStream();
-            StreamReader reader = new StreamReader(dataStream);
-            string content = reader.ReadToEnd();
+        private Movie DeserializeMovie(string json)
+        {
+            return JsonConvert.DeserializeObject<Movie>(json);
+        }
 
-            currentMovie = JsonConvert.DeserializeObject<Movie>(content);
+        private string GetMovieByTitle(string title)
+        {
+            OmdbMovieService omdbService = new OmdbMovieService();
+            Hashtable parameters = new Hashtable();
+            parameters.Add("title", title);
+            string content = omdbService.GetMovieByTitle(parameters);
+            return content;
         }
 
         public string GetMovieTitle()

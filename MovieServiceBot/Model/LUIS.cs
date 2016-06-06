@@ -2,7 +2,7 @@
 using Newtonsoft.Json;
 using System.Threading.Tasks;
 
-namespace MovieServiceBot.Controllers
+namespace MovieServiceBot.Model
 {
     public class LUIS
     {
