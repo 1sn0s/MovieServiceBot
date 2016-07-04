@@ -13,7 +13,7 @@ namespace MovieServiceBot
     {
         /// <summary>
         /// POST: api/Messages
-        /// Receive a message from a user and reply to it
+        /// Receive a message from a user and reply to itMana
         /// </summary>
         public async Task<Message> Post([FromBody]Message message)
         {
