@@ -67,7 +67,7 @@ namespace MovieServiceBot.Managers
             MovieManager currentMovie = GetCurrentMovie(parameters);
             if (null != currentMovie)
             {
-                reply = $"The imdb rating for {currentMovie.GetMovieTitle()} is {currentMovie.GetImdbRating()}";
+                reply = @"The imdb rating for {currentMovie.GetMovieTitle()} is {currentMovie.GetImdbRating()}";
             }
 
             return reply;

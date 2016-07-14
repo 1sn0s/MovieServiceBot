@@ -31,42 +31,42 @@ namespace MovieServiceBot.Managers
 
         public string GetMovieTitle()
         {
-            return $"{currentMovie.Title}";
+            return currentMovie.Title.ToString();
         }
 
         public string GetImdbRating()
         {
-            return $"{currentMovie.imdbRating}";
+            return currentMovie.imdbRating.ToString();
         }
 
         public string GetMovieGenre()
         {
-            return $"{currentMovie.Genre}";
+            return currentMovie.Genre.ToString();
         }
 
         public string GetMoviePlot()
         {
-            return $"{currentMovie.Plot}";
+            return currentMovie.Plot.ToString();
         }
 
         public string GetMovieRunningTime()
         {
-            return $"{currentMovie.Runtime}";
+            return currentMovie.Runtime.ToString();
         }
 
         public string GetMovieReleaseDate()
         {
-            return $"{currentMovie.Released}";
+            return currentMovie.Released.ToString();
         }
 
         public string GetMovieActor()
         {
-            return $"{currentMovie.Actors}";
+            return currentMovie.Actors.ToString();
         }
 
         public string GetMovieDirector()
         {
-            return $"{currentMovie.Director}";
+            return currentMovie.Director.ToString();
         }
     }
 }

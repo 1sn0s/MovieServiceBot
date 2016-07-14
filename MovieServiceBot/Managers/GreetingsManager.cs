@@ -15,7 +15,7 @@ namespace MovieServiceBot.Managers
 
         public string GetEchoGreeting()
         {
-            return $"{currentGreeting}";
+            return currentGreeting.ToString();
         }
     }
 }
