@@ -2,49 +2,57 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Microsoft.Bot.Connector;
-using Microsoft.Bot.Connector.Utilities;
+using Microsoft.Bot.Builder.Dialogs;
 using MovieServiceBot.Managers;
 using MovieServiceBot.Model;
+using System.Net.Http;
+using System.Net;
+using System;
 
 namespace MovieServiceBot
 {
-    [BotAuthentication]
+    //[BotAuthentication]
     public class MessagesController : ApiController
     {
         /// <summary>
         /// POST: api/Messages
         /// Receive a message from a user and reply to itMana
         /// </summary>
-        public async Task<Message> Post([FromBody]Message message)
+        public async Task<HttpResponseMessage> Post([FromBody]Activity message)
         {
-            if (message.Type == "Message")
+            var response = Request.CreateResponse(HttpStatusCode.Accepted);
+            ConnectorClient client = new ConnectorClient(new Uri(message.ServiceUrl));
+            if (message.Type == ActivityTypes.Message)
             {
                 MovieLUIS userRequest = await LUIS.ProcessuserInput(message.Text);                
-                string replyMessage = string.Empty;
-
+                string replyMessage = string.Empty;                
                 if(userRequest == null)
                 {
                     replyMessage = "My friend Luis is sleeping. I need him to wake up.";
                 } else
                 {
                     ActionManager actionManager = new ActionManager();
-                    replyMessage = actionManager.GetReplyMessage(userRequest);
-                }               
-                
-                return message.CreateReplyMessage(replyMessage);
+                    replyMessage = await actionManager.GetReplyMessage(userRequest);
+                }
+                //message.Language = "en";
+                Activity r = message.CreateReply(replyMessage);
+                await client.Conversations.ReplyToActivityAsync(r);
+                //return message.CreateReplyMessage(replyMessage);
             }
             else
             {
-                return HandleSystemMessage(message);
-            }
+                //return HandleSystemMessage(message);
+                await client.Conversations.ReplyToActivityAsync(HandleSystemMessage(message));
+            }            
+            return response;
         }
         
 
-        private Message HandleSystemMessage(Message message)
+        private Activity HandleSystemMessage(Activity message)
         {
-            if (message.Type == "Ping")
+            if (message.Type == ActivityTypes.Ping)
             {
-                Message reply = message.CreateReplyMessage();
+                Activity reply = message.CreateReply();
                 reply.Type = "Ping";
                 return reply;
             }

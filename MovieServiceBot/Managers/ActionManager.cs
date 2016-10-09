@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using MovieServiceBot.Model;
+using System.Threading.Tasks;
 
 namespace MovieServiceBot.Managers
 {
@@ -11,7 +12,7 @@ namespace MovieServiceBot.Managers
 
         static MovieManager thisMovie;
 
-        public string GetReplyMessage(MovieLUIS userData)
+        public async Task<string> GetReplyMessage(MovieLUIS userData)
         {
             string replyMessage = "Sorry, I don't understand what you just said. I am still learning.";
 
@@ -67,7 +68,7 @@ namespace MovieServiceBot.Managers
             MovieManager currentMovie = GetCurrentMovie(parameters);
             if (null != currentMovie)
             {
-                reply = @"The imdb rating for {currentMovie.GetMovieTitle()} is {currentMovie.GetImdbRating()}";
+                reply = string.Concat("The imdb rating for ", currentMovie.GetMovieTitle(), " is ", currentMovie.GetImdbRating());
             }
 
             return reply;
